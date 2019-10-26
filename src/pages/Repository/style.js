@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const Loading = styled.div`
   color: #fff;
@@ -10,15 +10,26 @@ export const Loading = styled.div`
   height: 100vh;
 `;
 
+const jump = keyframes`
+  0%   {transform: translate3d(0,0,0) scale3d(1,1,1);}
+  100%  {transform: translate3d(0,0,0) scale3d(.7,1.5,1);}
+`;
+
 export const Owner = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
 
   a {
-    color: #7159c1;
+    color: #696969;
     font-size: 16px;
     text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      transform-origin: 50% 50%;
+      animation: ${jump} 0.5s linear alternate infinite;
+    }
   }
 
   img {
@@ -77,7 +88,7 @@ export const IssueList = styled.ul`
           color: #333;
 
           &:hover {
-            color: #7159c1;
+            color: #696969;
           }
         }
 
@@ -100,4 +111,81 @@ export const IssueList = styled.ul`
       }
     }
   }
+`;
+
+export const NextButton = styled.button`
+  background: #a9a9a9;
+  border: 0;
+  padding: 0 15px;
+  border-radius: 4px;
+  margin-top: 15px;
+  height: 35px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  } */
+`;
+
+export const PreviousButton = styled.button.attrs(props => ({
+  disabled: props.page,
+}))`
+  background: #a9a9a9;
+  border: 0;
+  padding: 0 15px;
+  border-radius: 4px;
+  margin-top: 15px;
+  height: 35px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  } */
+`;
+
+export const Actions = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /* &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  } */
+`;
+
+export const Filter = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+`;
+
+export const FilterButton = styled.button`
+  background: #a9a9a9;
+  border: 0;
+  padding: 0 15px;
+  border-radius: 4px;
+  margin-top: 15px;
+  height: 35px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  } */
 `;

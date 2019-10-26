@@ -1,9 +1,21 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import Lottie from 'react-lottie';
 import api from '../../services/api';
 
-import { Loading, Owner, IssueList } from './style';
+import image from '../../assets/rocket.json';
+
+import {
+  Loading,
+  Owner,
+  IssueList,
+  NextButton,
+  PreviousButton,
+  Actions,
+  FilterButton,
+  Filter,
+} from './style';
 import Container from '../../components/Container/index';
 
 // import { Container } from './styles';
@@ -21,10 +33,18 @@ export default class Repository extends Component {
     repository: {},
     issues: [],
     loading: true,
+    pages: 1,
+    filter: [
+      { state: 'all', label: 'Todos' },
+      { state: 'open', label: 'Abertos' },
+      { state: 'closed', label: 'Fechados' },
+    ],
+    selectFilter: '',
   };
 
   async componentDidMount() {
     const { match } = this.props;
+    const { pages } = this.state;
 
     const repoName = decodeURIComponent(match.params.repository);
 
@@ -32,8 +52,9 @@ export default class Repository extends Component {
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'open',
+          state: 'all',
           per_page: 5,
+          page: pages,
         },
       }),
     ]);
@@ -45,11 +66,52 @@ export default class Repository extends Component {
     });
   }
 
+  // Salvar os dados no localStorage
+  async componentDidUpdate(_, prevState) {
+    const { pages, selectFilter } = this.state;
+    const { match } = this.props;
+
+    const repoName = decodeURIComponent(match.params.repository);
+
+    if (prevState.pages !== pages || prevState.selectFilter !== selectFilter) {
+      const response = await api.get(`/repos/${repoName}/issues`, {
+        params: {
+          state: selectFilter,
+          per_page: 5,
+          page: pages,
+        },
+      });
+
+      this.setState({
+        issues: response.data,
+      });
+    }
+  }
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, pages, filter } = this.state;
+
+    const defaultOptions = {
+      loop: true,
+      autoplay: true,
+      animationData: image,
+      renderSettings: {
+        preserveAspectRatio: 'xMidYMid slice',
+      },
+    };
 
     if (loading) {
-      return <Loading>Carregando</Loading>;
+      return (
+        <Loading>
+          <Lottie
+            options={defaultOptions}
+            height={400}
+            width={400}
+            isStopped={false}
+            isPaused={false}
+          />
+        </Loading>
+      );
     }
     return (
       <Container>
@@ -59,7 +121,16 @@ export default class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
-
+        <Filter>
+          {filter.map(states => (
+            <FilterButton
+              onClick={() => this.setState({ selectFilter: states.state })}
+            >
+              {' '}
+              {states.label}{' '}
+            </FilterButton>
+          ))}
+        </Filter>
         <IssueList>
           {issues.map(issue => (
             <li key={String(issue.id)}>
@@ -76,6 +147,23 @@ export default class Repository extends Component {
             </li>
           ))}
         </IssueList>
+        <Actions>
+          <PreviousButton
+            page={pages === 1}
+            onClick={() =>
+              this.setState({
+                pages: pages > 1 ? pages - 1 : pages,
+              })
+            }
+          >
+            {' '}
+            Anterior{' '}
+          </PreviousButton>
+          <NextButton onClick={() => this.setState({ pages: pages + 1 })}>
+            {' '}
+            Próximo{' '}
+          </NextButton>
+        </Actions>
       </Container>
     );
   }

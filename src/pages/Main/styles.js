@@ -19,7 +19,7 @@ export const Container = styled.div`
     }
   }
 `;
-export const Form = styled.form`
+export const Form = styled.form.attrs(props => ({}))`
   margin-top: 30px;
   display: flex;
   flex-direction: row;
@@ -47,7 +47,7 @@ export const SubmitButton = styled.button.attrs(props => ({
   type: 'submit',
   disabled: props.loading,
 }))`
-  background: #7159c1;
+  background: #696969;
   border: 0;
   padding: 0 15px;
   margin-left: 10px;
@@ -87,7 +87,8 @@ export const List = styled.ul`
     }
 
     a {
-      color: #7159c1;
+      font-weight: bold;
+      color: #696969;
       text-decoration: none;
     }
   }
